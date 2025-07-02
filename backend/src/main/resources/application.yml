@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: ai-neurysm-backend
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ai_neurysm
+    username: postgres
+    password: ${DB_PASSWORD:your_password_here}
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+logging:
+  level:
+    com.aineurysm: DEBUG
+    org.springframework.security: DEBUG
+
+jwt:
+  secret: ${JWT_SECRET:mi_clave_secreta_jwt_super_segura_para_desarrollo}
+  expiration: 86400000 # 24 horas en milisegundos
+
+app:
+  upload-dir: uploads/
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}
