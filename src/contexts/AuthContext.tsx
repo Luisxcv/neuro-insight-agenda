@@ -65,29 +65,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       const response = await authService.login(email, password);
       
-      if (response.success) {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
-        setUser(response.user);
-        
-        toast({
-          title: "¡Bienvenido!",
-          description: `Has iniciado sesión como ${response.user.name}`,
-        });
-        
-        return true;
-      } else {
-        toast({
-          title: "Error de autenticación",
-          description: response.message || "Credenciales inválidas",
-          variant: "destructive",
-        });
-        return false;
-      }
-    } catch (error: any) {
+      // La respuesta del backend debe tener esta estructura
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response.user));
+      setUser(response.user);
+      
       toast({
-        title: "Error de conexión",
-        description: "No se pudo conectar con el servidor",
+        title: "¡Bienvenido!",
+        description: `Has iniciado sesión como ${response.user.name}`,
+      });
+      
+      return true;
+    } catch (error: any) {
+      console.error('Login error:', error);
+      toast({
+        title: "Error de autenticación",
+        description: "Credenciales inválidas o error de conexión",
         variant: "destructive",
       });
       return false;
