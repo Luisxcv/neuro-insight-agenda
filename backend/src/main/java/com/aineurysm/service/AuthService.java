@@ -62,16 +62,27 @@ public class AuthService {
         }
 
         User savedUser = userRepository.save(user);
+        System.out.println("Usuario guardado exitosamente: " + savedUser.getEmail());
 
         // Generar token
+        System.out.println("Generando token para registro: " + savedUser.getEmail());
         String token = tokenProvider.generateToken(savedUser.getEmail());
+        System.out.println("Token generado en registro: " + (token != null ? "SÍ" : "NO"));
 
-        return new AuthResponse(
+        System.out.println("Creando UserResponse para registro...");
+        UserResponse userResponse = new UserResponse(savedUser);
+        System.out.println("UserResponse creado en registro");
+
+        System.out.println("Creando AuthResponse para registro...");
+        AuthResponse authResponse = new AuthResponse(
             true,
             "Usuario registrado exitosamente",
-            new UserResponse(savedUser),
+            userResponse,
             token
         );
+        System.out.println("AuthResponse creado en registro exitosamente");
+        
+        return authResponse;
     }
 
     public AuthResponse login(LoginRequest request) {
