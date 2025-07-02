@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { patientService } from '@/services/api';
+import { patientService, appointmentService, userService } from '@/services/api';
 import { 
   Table,
   TableBody,
@@ -47,25 +47,45 @@ interface Patient {
 
 const DoctorPatients = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Cargar pacientes desde el backend
+  // Cargar datos desde el backend
   useEffect(() => {
-    const fetchPatients = async () => {
+    const fetchData = async () => {
       try {
-        const response = await patientService.getAllPatients();
-        if (response.success) {
-          setPatients(response.data);
-          setFilteredPatients(response.data);
+        setLoading(true);
+        
+        // Obtener información del usuario actual
+        const userResponse = await userService.getCurrentUserProfile();
+        setCurrentUser(userResponse);
+        
+        // Obtener pacientes y citas del doctor en paralelo
+        const [patientsResponse, appointmentsResponse] = await Promise.all([
+          patientService.getAllPatients(),
+          appointmentService.getAppointmentsByDoctor(userResponse.name)
+        ]);
+        
+        if (patientsResponse.success) {
+          setPatients(patientsResponse.data);
+          setFilteredPatients(patientsResponse.data);
+        }
+        
+        if (appointmentsResponse.success) {
+          setAppointments(appointmentsResponse.data);
         }
       } catch (error) {
-        console.error('Error al cargar pacientes:', error);
+        console.error('Error al cargar datos:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchPatients();
+    fetchData();
   }, []);
 
   // Filtrar pacientes
@@ -145,16 +165,59 @@ const DoctorPatients = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Citas Próximas</CardTitle>
+            <CardTitle className="text-sm font-medium">Mis Citas</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {patients.filter(p => p.nextAppointment).length}
+              {appointments.length}
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Mis Citas */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Mis Citas</CardTitle>
+          <CardDescription>
+            {appointments.length} citas programadas
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="text-center py-4">Cargando citas...</div>
+          ) : appointments.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>No tienes citas programadas</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {appointments.slice(0, 5).map((appointment) => (
+                <div key={appointment.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <Calendar className="h-5 w-5 text-blue-600" />
+                    <div>
+                      <p className="font-medium">{appointment.patientName}</p>
+                      <p className="text-sm text-muted-foreground">{appointment.patientEmail}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">{appointment.date}</p>
+                    <p className="text-sm text-muted-foreground">{appointment.time}</p>
+                  </div>
+                </div>
+              ))}
+              {appointments.length > 5 && (
+                <p className="text-sm text-muted-foreground text-center">
+                  Y {appointments.length - 5} citas más...
+                </p>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Búsqueda */}
       <Card>
