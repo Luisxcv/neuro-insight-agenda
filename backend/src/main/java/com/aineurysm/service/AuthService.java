@@ -107,14 +107,24 @@ public class AuthService {
         }
 
         // Generar token
+        System.out.println("Generando token para: " + user.getEmail());
         String token = tokenProvider.generateToken(user.getEmail());
-
-        return new AuthResponse(
+        System.out.println("Token generado exitosamente: " + (token != null ? "SÍ" : "NO"));
+        
+        System.out.println("Creando UserResponse...");
+        UserResponse userResponse = new UserResponse(user);
+        System.out.println("UserResponse creado exitosamente");
+        
+        System.out.println("Creando AuthResponse...");
+        AuthResponse authResponse = new AuthResponse(
             true,
             "Inicio de sesión exitoso",
-            new UserResponse(user),
+            userResponse,
             token
         );
+        System.out.println("AuthResponse creado exitosamente");
+        
+        return authResponse;
     }
 
     public UserResponse getCurrentUser(Authentication authentication) {
