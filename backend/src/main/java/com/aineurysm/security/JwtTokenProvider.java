@@ -37,9 +37,8 @@ public class JwtTokenProvider {
     }
 
     public String getUserEmailFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
+        Claims claims = Jwts.parser()
                 .setSigningKey(getSigningKey())
-                .build()
                 .parseClaimsJws(token)
                 .getBody();
 
@@ -48,9 +47,8 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String authToken) {
         try {
-            Jwts.parserBuilder()
+            Jwts.parser()
                 .setSigningKey(getSigningKey())
-                .build()
                 .parseClaimsJws(authToken);
             return true;
         } catch (SecurityException ex) {
