@@ -75,6 +75,13 @@ public class UserService {
         return convertToUserResponse(user);
     }
 
+    public List<UserResponse> getApprovedDoctors() {
+        List<User> approvedDoctors = userRepository.findByRoleAndIsApprovedAndIsActive("doctor", true, true);
+        return approvedDoctors.stream()
+                .map(this::convertToUserResponse)
+                .collect(Collectors.toList());
+    }
+
     private UserResponse convertToUserResponse(User user) {
         return new UserResponse(user);
     }

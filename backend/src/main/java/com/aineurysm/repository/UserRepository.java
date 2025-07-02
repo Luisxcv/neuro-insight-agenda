@@ -18,4 +18,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmailAndIsActiveTrue(String email);
     
     List<User> findByRoleAndIsApproved(String role, boolean isApproved);
+    
+    List<User> findByRoleAndIsApprovedAndIsActive(String role, boolean isApproved, boolean isActive);
 }

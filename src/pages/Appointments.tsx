@@ -5,44 +5,52 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Calendar, Clock, User, ArrowLeft } from 'lucide-react';
-import { appointmentService } from '@/services/api';
+import { appointmentService, userService } from '@/services/api';
 
 const Appointments = () => {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedDoctor, setSelectedDoctor] = useState('');
   const [appointments, setAppointments] = useState<any[]>([]);
+  const [doctors, setDoctors] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  const doctors = [
-    { id: 1, name: 'Dr. María González', specialty: 'Neurología' },
-    { id: 2, name: 'Dr. Carlos Rodríguez', specialty: 'Neurocirugía' },
-    { id: 3, name: 'Dra. Ana Martínez', specialty: 'Radiología' }
-  ];
 
   const timeSlots = [
     '09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'
   ];
 
   useEffect(() => {
-    const loadAppointments = async () => {
+    const loadData = async () => {
+      setLoading(true);
       try {
-        const response = await appointmentService.getAllAppointments();
-        if (response.success) {
-          setAppointments(response.data);
+        // Cargar citas y doctores en paralelo
+        const [appointmentsResponse, doctorsResponse] = await Promise.all([
+          appointmentService.getAllAppointments(),
+          userService.getApprovedDoctors()
+        ]);
+
+        if (appointmentsResponse.success) {
+          setAppointments(appointmentsResponse.data);
+        }
+
+        if (doctorsResponse && Array.isArray(doctorsResponse)) {
+          setDoctors(doctorsResponse);
         }
       } catch (error) {
-        console.error('Error al cargar citas:', error);
+        console.error('Error al cargar datos:', error);
         toast({
           title: "Error",
-          description: "No se pudieron cargar las citas",
+          description: "No se pudieron cargar los datos",
           variant: "destructive"
         });
+      } finally {
+        setLoading(false);
       }
     };
 
-    loadAppointments();
+    loadData();
   }, []);
 
   const handleScheduleAppointment = async () => {
@@ -61,7 +69,7 @@ const Appointments = () => {
         date: selectedDate,
         time: selectedTime,
         doctorName: doctor?.name || '',
-        doctorSpecialty: doctor?.specialty || '',
+        doctorSpecialty: doctor?.role || 'Especialista',
         patientName: 'Usuario' // Esto debería venir del contexto de usuario
       };
 
@@ -133,11 +141,12 @@ const Appointments = () => {
                   value={selectedDoctor}
                   onChange={(e) => setSelectedDoctor(e.target.value)}
                   className="w-full p-2 border rounded-md"
+                  disabled={loading}
                 >
-                  <option value="">Seleccionar médico...</option>
+                  <option value="">{loading ? 'Cargando médicos...' : 'Seleccionar médico...'}</option>
                   {doctors.map(doctor => (
                     <option key={doctor.id} value={doctor.id}>
-                      {doctor.name} - {doctor.specialty}
+                      {doctor.name} - {doctor.role}
                     </option>
                   ))}
                 </select>
@@ -171,8 +180,9 @@ const Appointments = () => {
               <Button 
                 onClick={handleScheduleAppointment}
                 className="w-full bg-blue-600 hover:bg-blue-700"
+                disabled={loading}
               >
-                Agendar Cita
+                {loading ? 'Cargando...' : 'Agendar Cita'}
               </Button>
             </CardContent>
           </Card>

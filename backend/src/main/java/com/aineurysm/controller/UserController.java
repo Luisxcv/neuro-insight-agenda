@@ -72,4 +72,11 @@ public class UserController {
         UserResponse user = userService.getCurrentUserProfile();
         return ResponseEntity.ok(user);
     }
+
+    // Obtener doctores aprobados (disponible para todos los usuarios autenticados)
+    @GetMapping("/doctors")
+    public ResponseEntity<List<UserResponse>> getApprovedDoctors() {
+        List<UserResponse> doctors = userService.getApprovedDoctors();
+        return ResponseEntity.ok(doctors);
+    }
 }

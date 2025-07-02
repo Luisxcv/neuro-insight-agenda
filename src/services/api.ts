@@ -96,6 +96,10 @@ export const userService = {
       method: 'DELETE',
     });
   },
+
+  getApprovedDoctors: async () => {
+    return apiRequest('/api/users/doctors');
+  },
 };
 
 // Servicios de pacientes
