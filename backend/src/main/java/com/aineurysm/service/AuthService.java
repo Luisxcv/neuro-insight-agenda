@@ -90,6 +90,13 @@ public class AuthService {
         }
 
         // Verificar contraseña manualmente primero
+        System.out.println("=== DEBUG LOGIN ===");
+        System.out.println("Email encontrado: " + user.getEmail());
+        System.out.println("Password desde request: " + request.getPassword());
+        System.out.println("Password hash en BD: " + user.getPassword());
+        System.out.println("Password matches: " + passwordEncoder.matches(request.getPassword(), user.getPassword()));
+        System.out.println("==================");
+        
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Credenciales inválidas");
         }
