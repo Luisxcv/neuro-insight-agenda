@@ -14,6 +14,7 @@ import UserManagement from "./pages/dashboard/UserManagement";
 import PatientAnalysis from "./pages/dashboard/PatientAnalysis";
 import PatientProfile from "./pages/dashboard/PatientProfile";
 import DoctorPatients from "./pages/dashboard/DoctorPatients";
+import PendingDoctors from "./pages/dashboard/PendingDoctors";
 import Appointments from "./pages/Appointments";
 import NotFound from "./pages/NotFound";
 
@@ -37,7 +38,7 @@ const App = () => (
               <Route path="appointments" element={<Appointments />} />
               <Route path="patients" element={<DoctorPatients />} />
               <Route path="diagnoses" element={<div>Diagnósticos</div>} />
-              <Route path="pending-doctors" element={<div>Médicos Pendientes</div>} />
+              <Route path="pending-doctors" element={<PendingDoctors />} />
               <Route path="all-appointments" element={<div>Todas las Citas</div>} />
               <Route path="reports" element={<div>Reportes</div>} />
               <Route path="settings" element={<div>Configuración</div>} />

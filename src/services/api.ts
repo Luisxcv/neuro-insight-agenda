@@ -1,5 +1,5 @@
 // Configuración base de la API
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = 'http://localhost:3000';
 
 // Función helper para hacer requests con token
 const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
@@ -40,10 +40,20 @@ export const authService = {
     phone?: string;
     specialty?: string;
   }) => {
-    return apiRequest('/auth/register', {
+    // Para registro, no incluir token de autorización
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(userData),
     });
+    
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+    
+    return response.json();
   },
 
   verifyToken: async () => {
