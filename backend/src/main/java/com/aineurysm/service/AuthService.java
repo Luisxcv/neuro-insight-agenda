@@ -53,8 +53,8 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole() != null ? request.getRole().toLowerCase() : "patient");
         
-        // Auto-aprobar pacientes, médicos requieren aprobación manual  
-        user.setIsApproved("patient".equals(user.getRole()));
+        // Auto-aprobar pacientes y administradores, médicos requieren aprobación manual  
+        user.setIsApproved("patient".equals(user.getRole()) || "admin".equals(user.getRole()));
         
         // Asegurar que los pacientes tengan el rol correcto por defecto
         if (user.getRole() == null || user.getRole().trim().isEmpty()) {
