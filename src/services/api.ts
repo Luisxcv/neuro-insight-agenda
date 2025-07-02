@@ -1,5 +1,5 @@
 // Configuración base de la API
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'http://localhost:3000/api';
 
 // Función helper para hacer requests con token
 const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
@@ -41,7 +41,7 @@ export const authService = {
     specialty?: string;
   }) => {
     // Para registro, no incluir token de autorización
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    const response = await fetch(`http://localhost:3000/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -64,41 +64,41 @@ export const authService = {
 // Servicios de usuarios
 export const userService = {
   getAllUsers: async () => {
-    return apiRequest('/api/users');
+    return apiRequest('/users');
   },
 
   getUserById: async (id: number) => {
-    return apiRequest(`/api/users/${id}`);
+    return apiRequest(`/users/${id}`);
   },
 
   getCurrentUserProfile: async () => {
-    return apiRequest('/api/users/profile');
+    return apiRequest('/users/profile');
   },
 
   getPendingDoctors: async () => {
-    return apiRequest('/api/users/pending-doctors');
+    return apiRequest('/users/pending-doctors');
   },
 
   approveDoctor: async (id: number) => {
-    return apiRequest(`/api/users/${id}/approve`, {
+    return apiRequest(`/users/${id}/approve`, {
       method: 'PUT',
     });
   },
 
   toggleUserStatus: async (id: number) => {
-    return apiRequest(`/api/users/${id}/toggle-status`, {
+    return apiRequest(`/users/${id}/toggle-status`, {
       method: 'PUT',
     });
   },
 
   deleteUser: async (id: number) => {
-    return apiRequest(`/api/users/${id}`, {
+    return apiRequest(`/users/${id}`, {
       method: 'DELETE',
     });
   },
 
   getApprovedDoctors: async () => {
-    return apiRequest('/api/users/doctors');
+    return apiRequest('/users/doctors');
   },
 };
 
@@ -106,15 +106,15 @@ export const userService = {
 export const patientService = {
   getAllPatients: async (search?: string) => {
     const queryParam = search ? `?search=${encodeURIComponent(search)}` : '';
-    return apiRequest(`/api/patients${queryParam}`);
+    return apiRequest(`/patients${queryParam}`);
   },
 
   getPatientById: async (id: number) => {
-    return apiRequest(`/api/patients/${id}`);
+    return apiRequest(`/patients/${id}`);
   },
 
   getPatientStats: async () => {
-    return apiRequest('/api/patients/stats');
+    return apiRequest('/patients/stats');
   },
 
   createPatient: async (patientData: {
@@ -123,7 +123,7 @@ export const patientService = {
     phone: string;
     status?: string;
   }) => {
-    return apiRequest('/api/patients', {
+    return apiRequest('/patients', {
       method: 'POST',
       body: JSON.stringify(patientData),
     });
@@ -133,11 +133,11 @@ export const patientService = {
 // Servicios de citas
 export const appointmentService = {
   getAllAppointments: async () => {
-    return apiRequest('/api/appointments');
+    return apiRequest('/appointments');
   },
 
   getAppointmentsByDoctor: async (doctorName: string) => {
-    return apiRequest(`/api/appointments/doctor/${encodeURIComponent(doctorName)}`);
+    return apiRequest(`/appointments/doctor/${encodeURIComponent(doctorName)}`);
   },
 
   createAppointment: async (appointmentData: {
@@ -147,14 +147,14 @@ export const appointmentService = {
     doctorSpecialty: string;
     patientName: string;
   }) => {
-    return apiRequest('/api/appointments', {
+    return apiRequest('/appointments', {
       method: 'POST',
       body: JSON.stringify(appointmentData),
     });
   },
 
   cancelAppointment: async (id: number) => {
-    return apiRequest(`/api/appointments/${id}/cancel`, {
+    return apiRequest(`/appointments/${id}/cancel`, {
       method: 'PUT',
     });
   },
