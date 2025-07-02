@@ -79,7 +79,7 @@ const UserManagement = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/users', {
+        const response = await fetch('http://localhost:8080/api/users', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'Content-Type': 'application/json'
@@ -155,7 +155,7 @@ const UserManagement = () => {
 
   const handleToggleUserStatus = async (userId: number) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/users/${userId}/toggle-status`, {
+      const response = await fetch(`http://localhost:8080/api/users/${userId}/toggle-status`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -192,7 +192,7 @@ const UserManagement = () => {
 
   const handleApproveDoctor = async (userId: number) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/users/${userId}/approve`, {
+      const response = await fetch(`http://localhost:8080/api/users/${userId}/approve`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -229,7 +229,7 @@ const UserManagement = () => {
 
   const handleDeleteUser = async (userId: number) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/users/${userId}`, {
+      const response = await fetch(`http://localhost:8080/api/users/${userId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
