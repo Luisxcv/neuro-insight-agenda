@@ -80,12 +80,17 @@ public class AuthService {
             .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
 
         // Verificar si está activo
+        System.out.println("User isActive: " + user.getIsActive());
         if (!user.getIsActive()) {
+            System.out.println("FALLO: Usuario no activo");
             throw new RuntimeException("Cuenta desactivada. Contacta al administrador");
         }
 
         // Verificar aprobación para médicos
+        System.out.println("User role: " + user.getRole());
+        System.out.println("User isApproved: " + user.getIsApproved());
         if ("doctor".equals(user.getRole()) && !user.getIsApproved()) {
+            System.out.println("FALLO: Doctor no aprobado");
             throw new RuntimeException("Tu cuenta de médico está pendiente de aprobación");
         }
 
