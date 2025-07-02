@@ -47,7 +47,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           // Verificar que el token sigue siendo válido
           await authService.verifyToken();
-          setUser(JSON.parse(userData));
+          const parsedUser = JSON.parse(userData);
+          // Asegurar que el rol esté en mayúsculas
+          if (parsedUser.role) {
+            parsedUser.role = parsedUser.role.toUpperCase();
+          }
+          setUser(parsedUser);
         } catch (error) {
           // Token inválido, limpiar
           localStorage.removeItem('token');

@@ -30,15 +30,18 @@ const Login = () => {
       const data = await response.json();
       console.log('Login response:', { status: response.status, data });
 
-      if (data.success) {
+      if (response.ok && data.success) {
+        // Guardar en localStorage primero
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
+        
         toast({
           title: "Inicio de sesión exitoso",
           description: "Bienvenido al sistema AI-Neurysm",
         });
-        // Pequeño delay para asegurar que el localStorage se actualice
-        setTimeout(() => navigate('/dashboard'), 100);
+        
+        // Redirección inmediata
+        navigate('/dashboard');
       } else {
         toast({
           title: "Error",
