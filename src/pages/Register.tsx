@@ -44,13 +44,13 @@ const Register = () => {
           email: formData.email,
           password: formData.password,
           confirmPassword: formData.confirmPassword,
-          role: formData.role
+          role: formData.role || 'patient'
         }),
       });
 
       const data = await response.json();
 
-      if (response.ok) {
+      if (response.ok && data.success) {
         toast({
           title: "Registro exitoso",
           description: "Tu cuenta ha sido creada correctamente",

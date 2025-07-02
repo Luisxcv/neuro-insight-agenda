@@ -29,7 +29,6 @@ public class User implements UserDetails {
     
     @Column(name = "password_hash", nullable = false)
     @NotBlank
-    @Size(min = 6)
     private String password;
     
     @Column(nullable = false)

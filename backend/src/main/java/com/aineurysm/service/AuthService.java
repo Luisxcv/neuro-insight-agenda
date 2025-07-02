@@ -41,6 +41,11 @@ public class AuthService {
             throw new RuntimeException("Las contraseñas no coinciden");
         }
 
+        // Validar longitud de contraseña
+        if (request.getPassword().length() < 6) {
+            throw new RuntimeException("La contraseña debe tener al menos 6 caracteres");
+        }
+
         // Crear nuevo usuario
         User user = new User();
         user.setName(request.getName());
@@ -48,8 +53,13 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole() != null ? request.getRole().toLowerCase() : "patient");
         
-        // Auto-aprobar pacientes, médicos requieren aprobación manual
+        // Auto-aprobar pacientes, médicos requieren aprobación manual  
         user.setIsApproved("patient".equals(user.getRole()));
+        
+        // Asegurar que los pacientes tengan el rol correcto por defecto
+        if (user.getRole() == null || user.getRole().trim().isEmpty()) {
+            user.setRole("patient");
+        }
 
         User savedUser = userRepository.save(user);
 
