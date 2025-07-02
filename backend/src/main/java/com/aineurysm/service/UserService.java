@@ -76,15 +76,6 @@ public class UserService {
     }
 
     private UserResponse convertToUserResponse(User user) {
-        return UserResponse.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .role(user.getRole().toUpperCase())
-                .phone(user.getPhone())
-                .isActive(user.isActive())
-                .isApproved(user.isApproved())
-                .createdAt(user.getCreatedAt().toString())
-                .build();
+        return new UserResponse(user);
     }
 }
