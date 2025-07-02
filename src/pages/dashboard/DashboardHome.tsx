@@ -17,7 +17,7 @@ interface User {
   id: number;
   name: string;
   email: string;
-  role: 'PATIENT' | 'DOCTOR' | 'ADMIN';
+  role: 'patient' | 'doctor' | 'admin';
 }
 
 const DashboardHome = () => {
@@ -414,11 +414,11 @@ const DashboardHome = () => {
 
   const renderDashboard = () => {
     switch (user.role) {
-      case 'PATIENT':
+      case 'patient':
         return renderPatientDashboard();
-      case 'DOCTOR':
+      case 'doctor':
         return renderDoctorDashboard();
-      case 'ADMIN':
+      case 'admin':
         return renderAdminDashboard();
       default:
         return <div>Rol no reconocido</div>;
