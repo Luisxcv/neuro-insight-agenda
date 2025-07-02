@@ -37,7 +37,7 @@ jwt:
 
 app:
   upload-dir: uploads/
-  frontend-url: ${FRONTEND_URL:http://localhost:5173}
+  frontend-url: ${FRONTEND_URL:http://localhost:8080}
 
 management:
   endpoints:
