@@ -56,7 +56,7 @@ interface User {
   id: number;
   name: string;
   email: string;
-  role: 'PATIENT' | 'DOCTOR' | 'ADMIN';
+  role: 'patient' | 'doctor' | 'admin';
   isActive: boolean;
   isApproved: boolean;
   createdAt: string;
@@ -93,7 +93,7 @@ const UserManagement = () => {
             id: user.id,
             name: user.name,
             email: user.email,
-            role: user.role.toUpperCase(), // Convertir a mayúsculas para compatibilidad con UI
+            role: user.role, // Mantener minúsculas como viene del backend
             isActive: user.isActive,
             isApproved: user.isApproved,
             createdAt: user.createdAt ? user.createdAt.split('T')[0] : '',
@@ -146,7 +146,7 @@ const UserManagement = () => {
       } else if (statusFilter === 'inactive') {
         filtered = filtered.filter(user => !user.isActive);
       } else if (statusFilter === 'pending') {
-        filtered = filtered.filter(user => !user.isApproved && user.role === 'DOCTOR');
+        filtered = filtered.filter(user => !user.isApproved && user.role === 'doctor');
       }
     }
 
@@ -261,6 +261,7 @@ const UserManagement = () => {
   };
 
   const getRoleBadge = (role: string) => {
+    const roleUpper = role.toUpperCase();
     const variants = {
       PATIENT: "default",
       DOCTOR: "secondary",
@@ -274,8 +275,8 @@ const UserManagement = () => {
     };
     
     return (
-      <Badge variant={variants[role as keyof typeof variants]}>
-        {labels[role as keyof typeof labels]}
+      <Badge variant={variants[roleUpper as keyof typeof variants]}>
+        {labels[roleUpper as keyof typeof labels]}
       </Badge>
     );
   };
@@ -284,7 +285,7 @@ const UserManagement = () => {
     if (!user.isActive) {
       return <Badge variant="outline" className="text-red-600"><XCircle className="h-3 w-3 mr-1" />Inactivo</Badge>;
     }
-    if (user.role === 'DOCTOR' && !user.isApproved) {
+    if (user.role === 'doctor' && !user.isApproved) {
       return <Badge variant="outline" className="text-yellow-600"><Clock className="h-3 w-3 mr-1" />Pendiente</Badge>;
     }
     return <Badge variant="outline" className="text-green-600"><CheckCircle className="h-3 w-3 mr-1" />Activo</Badge>;
@@ -318,7 +319,7 @@ const UserManagement = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {users.filter(u => u.role === 'PATIENT').length}
+              {users.filter(u => u.role === 'patient').length}
             </div>
           </CardContent>
         </Card>
@@ -330,7 +331,7 @@ const UserManagement = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {users.filter(u => u.role === 'DOCTOR').length}
+              {users.filter(u => u.role === 'doctor').length}
             </div>
           </CardContent>
         </Card>
@@ -342,7 +343,7 @@ const UserManagement = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {users.filter(u => u.role === 'DOCTOR' && !u.isApproved).length}
+              {users.filter(u => u.role === 'doctor' && !u.isApproved).length}
             </div>
           </CardContent>
         </Card>
@@ -377,9 +378,9 @@ const UserManagement = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos</SelectItem>
-                  <SelectItem value="PATIENT">Pacientes</SelectItem>
-                  <SelectItem value="DOCTOR">Médicos</SelectItem>
-                  <SelectItem value="ADMIN">Administradores</SelectItem>
+                  <SelectItem value="patient">Pacientes</SelectItem>
+                  <SelectItem value="doctor">Médicos</SelectItem>
+                  <SelectItem value="admin">Administradores</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -445,7 +446,7 @@ const UserManagement = () => {
                         <Eye className="h-4 w-4" />
                       </Button>
                       
-                      {user.role === 'DOCTOR' && !user.isApproved && (
+                      {user.role === 'doctor' && !user.isApproved && (
                         <Button
                           variant="outline"
                           size="sm"
