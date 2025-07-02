@@ -1,3 +1,4 @@
+
 package com.aineurysm.service;
 
 import com.aineurysm.dto.UserResponse;
@@ -31,7 +32,7 @@ public class UserService {
     }
 
     public List<UserResponse> getPendingDoctors() {
-        List<User> pendingDoctors = userRepository.findByRoleAndIsApproved(User.Role.DOCTOR, false);
+        List<User> pendingDoctors = userRepository.findByRoleAndIsApproved("doctor", false);
         return pendingDoctors.stream()
                 .map(this::convertToUserResponse)
                 .collect(Collectors.toList());
@@ -41,7 +42,7 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         
-        if (user.getRole() != User.Role.DOCTOR) {
+        if (!"doctor".equals(user.getRole())) {
             throw new RuntimeException("El usuario no es un médico");
         }
         
@@ -79,8 +80,7 @@ public class UserService {
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
-                .role(user.getRole().name())
-                .specialty(user.getSpecialty())
+                .role(user.getRole().toUpperCase())
                 .phone(user.getPhone())
                 .isActive(user.isActive())
                 .isApproved(user.isApproved())

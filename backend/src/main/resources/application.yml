@@ -1,16 +1,17 @@
+
 spring:
   application:
     name: ai-neurysm-backend
   
   datasource:
-    url: jdbc:postgresql://localhost:5432/ai_neurysm
+    url: jdbc:postgresql://localhost:5432/db
     username: postgres
-    password: ${DB_PASSWORD:your_password_here}
+    password: password
     driver-class-name: org.postgresql.Driver
   
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
@@ -24,8 +25,6 @@ spring:
 
 server:
   port: 8080
-  servlet:
-    context-path: /api
 
 logging:
   level:

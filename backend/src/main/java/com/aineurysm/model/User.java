@@ -1,3 +1,4 @@
+
 package com.aineurysm.model;
 
 import jakarta.persistence.*;
@@ -35,17 +36,15 @@ public class User implements UserDetails {
     @NotBlank
     private String name;
     
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role = Role.PATIENT;
+    private String role = "patient";
     
     private String phone;
     
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
     
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
+    private String gender;
     
     @Column(name = "is_active")
     private Boolean isActive = true;
@@ -62,18 +61,18 @@ public class User implements UserDetails {
     // Constructores
     public User() {}
 
-    public User(String email, String password, String name, Role role) {
+    public User(String email, String password, String name, String role) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.role = role;
-        this.isApproved = (role == Role.PATIENT);
+        this.isApproved = "patient".equals(role);
     }
 
     // UserDetails implementation
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
     }
 
     @Override
@@ -114,8 +113,8 @@ public class User implements UserDetails {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public Role getRole() { return role; }
-    public void setRole(Role role) { this.role = role; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
@@ -123,8 +122,8 @@ public class User implements UserDetails {
     public LocalDate getDateOfBirth() { return dateOfBirth; }
     public void setDateOfBirth(LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }
 
-    public Gender getGender() { return gender; }
-    public void setGender(Gender gender) { this.gender = gender; }
+    public String getGender() { return gender; }
+    public void setGender(String gender) { this.gender = gender; }
 
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
@@ -143,12 +142,20 @@ public class User implements UserDetails {
         updatedAt = LocalDateTime.now();
     }
 
-    // Enums
-    public enum Role {
-        PATIENT, DOCTOR, ADMIN
+    // Método helper para compatibilidad
+    public boolean isActive() {
+        return isActive != null && isActive;
     }
 
-    public enum Gender {
-        MALE, FEMALE, OTHER
+    public boolean isApproved() {
+        return isApproved != null && isApproved;
+    }
+
+    public void setActive(boolean active) {
+        this.isActive = active;
+    }
+
+    public void setApproved(boolean approved) {
+        this.isApproved = approved;
     }
 }

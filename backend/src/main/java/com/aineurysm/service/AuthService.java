@@ -1,3 +1,4 @@
+
 package com.aineurysm.service;
 
 import com.aineurysm.dto.AuthResponse;
@@ -45,10 +46,10 @@ public class AuthService {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(request.getRole() != null ? request.getRole() : User.Role.PATIENT);
+        user.setRole(request.getRole() != null ? request.getRole().toLowerCase() : "patient");
         
         // Auto-aprobar pacientes, médicos requieren aprobación manual
-        user.setIsApproved(user.getRole() == User.Role.PATIENT);
+        user.setIsApproved("patient".equals(user.getRole()));
 
         User savedUser = userRepository.save(user);
 
@@ -74,7 +75,7 @@ public class AuthService {
         }
 
         // Verificar aprobación para médicos
-        if (user.getRole() == User.Role.DOCTOR && !user.getIsApproved()) {
+        if ("doctor".equals(user.getRole()) && !user.getIsApproved()) {
             throw new RuntimeException("Tu cuenta de médico está pendiente de aprobación");
         }
 

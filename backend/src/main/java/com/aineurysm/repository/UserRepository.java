@@ -1,3 +1,4 @@
+
 package com.aineurysm.repository;
 
 import com.aineurysm.model.User;
@@ -16,5 +17,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     
     Optional<User> findByEmailAndIsActiveTrue(String email);
     
-    List<User> findByRoleAndIsApproved(User.Role role, boolean isApproved);
+    List<User> findByRoleAndIsApproved(String role, boolean isApproved);
 }
