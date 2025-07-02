@@ -19,10 +19,10 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "appointment_date", nullable = false)
     private LocalDate date;
 
-    @Column(nullable = false)
+    @Column(name = "appointment_time", nullable = false)
     private LocalTime time;
 
     @Column(name = "doctor_name", nullable = false)
