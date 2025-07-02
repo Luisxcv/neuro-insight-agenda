@@ -49,9 +49,9 @@ const DashboardHome = () => {
             <Brain className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
+            <div className="text-2xl font-bold">-</div>
             <p className="text-xs text-muted-foreground">
-              +2 desde la semana pasada
+              Conectar con servidor
             </p>
           </CardContent>
         </Card>
@@ -62,9 +62,9 @@ const DashboardHome = () => {
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2</div>
+            <div className="text-2xl font-bold">-</div>
             <p className="text-xs text-muted-foreground">
-              Esta semana
+              Conectar con servidor
             </p>
           </CardContent>
         </Card>
@@ -75,9 +75,9 @@ const DashboardHome = () => {
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">8</div>
+            <div className="text-2xl font-bold">-</div>
             <p className="text-xs text-muted-foreground">
-              Consultas registradas
+              Conectar con servidor
             </p>
           </CardContent>
         </Card>
@@ -88,9 +88,9 @@ const DashboardHome = () => {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">Estable</div>
+            <div className="text-2xl font-bold">-</div>
             <p className="text-xs text-muted-foreground">
-              Última revisión hace 2 días
+              Conectar con servidor
             </p>
           </CardContent>
         </Card>

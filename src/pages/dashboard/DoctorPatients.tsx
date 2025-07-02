@@ -50,54 +50,30 @@ const DoctorPatients = () => {
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
-  // Datos de ejemplo
+  // Cargar pacientes desde el backend
   useEffect(() => {
-    const mockPatients: Patient[] = [
-      {
-        id: 1,
-        name: "Ana García",
-        email: "ana.garcia@email.com",
-        phone: "+1234567890",
-        lastVisit: "2024-01-15",
-        nextAppointment: "2024-02-15",
-        status: 'active',
-        totalAnalyses: 3,
-        lastAnalysisResult: 'normal'
-      },
-      {
-        id: 2,
-        name: "Carlos Mendoza",
-        email: "carlos.mendoza@email.com", 
-        phone: "+1234567891",
-        lastVisit: "2024-01-10",
-        status: 'active',
-        totalAnalyses: 5,
-        lastAnalysisResult: 'abnormal'
-      },
-      {
-        id: 3,
-        name: "María López",
-        email: "maria.lopez@email.com",
-        phone: "+1234567892",
-        lastVisit: "2024-01-05",
-        nextAppointment: "2024-02-20",
-        status: 'active',
-        totalAnalyses: 2,
-        lastAnalysisResult: 'pending'
-      },
-      {
-        id: 4,
-        name: "Pedro Ruiz",
-        email: "pedro.ruiz@email.com",
-        phone: "+1234567893",
-        lastVisit: "2023-12-20",
-        status: 'inactive',
-        totalAnalyses: 1,
-        lastAnalysisResult: 'normal'
+    const fetchPatients = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/patients', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setPatients(data);
+          setFilteredPatients(data);
+        } else {
+          console.error('Error al cargar pacientes');
+        }
+      } catch (error) {
+        console.error('Error de conexión:', error);
       }
-    ];
-    setPatients(mockPatients);
-    setFilteredPatients(mockPatients);
+    };
+
+    fetchPatients();
   }, []);
 
   // Filtrar pacientes
