@@ -6,7 +6,7 @@ interface User {
   id: number;
   name: string;
   email: string;
-  role: 'PATIENT' | 'DOCTOR' | 'ADMIN';
+  role: 'patient' | 'doctor' | 'admin';
   isActive: boolean;
   isApproved: boolean;
   phone?: string;
@@ -48,9 +48,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Verificar que el token sigue siendo válido
           await authService.verifyToken();
           const parsedUser = JSON.parse(userData);
-          // Asegurar que el rol esté en mayúsculas
+          // Asegurar que el rol esté en minúsculas
           if (parsedUser.role) {
-            parsedUser.role = parsedUser.role.toUpperCase();
+            parsedUser.role = parsedUser.role.toLowerCase();
           }
           setUser(parsedUser);
         } catch (error) {
@@ -102,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (response.success) {
         toast({
           title: "¡Registro exitoso!",
-          description: userData.role === 'DOCTOR' 
+          description: userData.role === 'doctor' 
             ? "Tu cuenta está pendiente de aprobación por un administrador"
             : "Ya puedes iniciar sesión con tus credenciales",
         });

@@ -16,7 +16,7 @@ public class UserResponse {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
-        this.role = user.getRole() != null ? user.getRole().toUpperCase() : "PATIENT";
+        this.role = user.getRole() != null ? user.getRole().toLowerCase() : "patient";
         this.isApproved = user.getIsApproved();
     }
 

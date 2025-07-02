@@ -34,7 +34,7 @@ interface User {
   id: number;
   name: string;
   email: string;
-  role: 'PATIENT' | 'DOCTOR' | 'ADMIN';
+  role: 'patient' | 'doctor' | 'admin';
 }
 
 const DashboardLayout = () => {
@@ -62,7 +62,7 @@ const DashboardLayout = () => {
     ];
 
     switch (user.role) {
-      case 'PATIENT':
+      case 'patient':
         return [
           ...baseItems,
           { title: "Análisis de IA", url: "/dashboard/analysis", icon: Brain },
@@ -71,7 +71,7 @@ const DashboardLayout = () => {
           { title: "Mi Perfil", url: "/dashboard/profile", icon: User },
         ];
       
-      case 'DOCTOR':
+      case 'doctor':
         return [
           ...baseItems,
           { title: "Mis Pacientes", url: "/dashboard/patients", icon: Users },
@@ -80,7 +80,7 @@ const DashboardLayout = () => {
           { title: "Mi Perfil", url: "/dashboard/profile", icon: Stethoscope },
         ];
       
-      case 'ADMIN':
+      case 'admin':
         return [
           ...baseItems,
           { title: "Gestión de Usuarios", url: "/dashboard/users", icon: Users },
@@ -154,18 +154,18 @@ function AppSidebar({
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'PATIENT': return 'text-blue-600';
-      case 'DOCTOR': return 'text-green-600';
-      case 'ADMIN': return 'text-purple-600';
+      case 'patient': return 'text-blue-600';
+      case 'doctor': return 'text-green-600';
+      case 'admin': return 'text-purple-600';
       default: return 'text-gray-600';
     }
   };
 
   const getRoleLabel = (role: string) => {
     switch (role) {
-      case 'PATIENT': return 'Paciente';
-      case 'DOCTOR': return 'Médico';
-      case 'ADMIN': return 'Administrador';
+      case 'patient': return 'Paciente';
+      case 'doctor': return 'Médico';
+      case 'admin': return 'Administrador';
       default: return role;
     }
   };
