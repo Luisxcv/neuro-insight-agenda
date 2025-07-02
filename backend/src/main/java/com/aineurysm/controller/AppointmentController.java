@@ -1,0 +1,128 @@
+package com.aineurysm.controller;
+
+import com.aineurysm.dto.AppointmentRequest;
+import com.aineurysm.dto.AppointmentResponse;
+import com.aineurysm.model.Appointment;
+import com.aineurysm.service.AppointmentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/api/appointments")
+@CrossOrigin(origins = "http://localhost:8080")
+public class AppointmentController {
+
+    @Autowired
+    private AppointmentService appointmentService;
+
+    @GetMapping
+    public ResponseEntity<Map<String, Object>> getAllAppointments() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = auth.getName();
+
+            List<Appointment> appointments = appointmentService.getAppointmentsByPatientEmail(userEmail);
+            
+            List<AppointmentResponse> appointmentResponses = appointments.stream()
+                .map(AppointmentResponse::new)
+                .collect(Collectors.toList());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("data", appointmentResponses);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Error al obtener citas: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    @GetMapping("/doctor/{doctorName}")
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> getAppointmentsByDoctor(@PathVariable String doctorName) {
+        try {
+            List<Appointment> appointments = appointmentService.getAppointmentsByDoctor(doctorName);
+            
+            List<AppointmentResponse> appointmentResponses = appointments.stream()
+                .map(AppointmentResponse::new)
+                .collect(Collectors.toList());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("data", appointmentResponses);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Error al obtener citas del doctor: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<Map<String, Object>> createAppointment(@RequestBody AppointmentRequest request) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = auth.getName();
+
+            Appointment appointment = new Appointment();
+            appointment.setDate(LocalDate.parse(request.getDate()));
+            appointment.setTime(LocalTime.parse(request.getTime()));
+            appointment.setDoctorName(request.getDoctorName());
+            appointment.setDoctorSpecialty(request.getDoctorSpecialty());
+            appointment.setPatientName(request.getPatientName());
+            appointment.setPatientEmail(userEmail);
+
+            Appointment savedAppointment = appointmentService.createAppointment(appointment);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("data", new AppointmentResponse(savedAppointment));
+            response.put("message", "Cita agendada exitosamente");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<Map<String, Object>> cancelAppointment(@PathVariable Long id) {
+        try {
+            Appointment appointment = appointmentService.getAppointmentById(id)
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+
+            appointment.setStatus(Appointment.AppointmentStatus.CANCELLED);
+            appointmentService.updateAppointment(appointment);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Cita cancelada exitosamente");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+}

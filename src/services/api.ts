@@ -97,3 +97,61 @@ export const userService = {
     });
   },
 };
+
+// Servicios de pacientes
+export const patientService = {
+  getAllPatients: async (search?: string) => {
+    const queryParam = search ? `?search=${encodeURIComponent(search)}` : '';
+    return apiRequest(`/api/patients${queryParam}`);
+  },
+
+  getPatientById: async (id: number) => {
+    return apiRequest(`/api/patients/${id}`);
+  },
+
+  getPatientStats: async () => {
+    return apiRequest('/api/patients/stats');
+  },
+
+  createPatient: async (patientData: {
+    name: string;
+    email: string;
+    phone: string;
+    status?: string;
+  }) => {
+    return apiRequest('/api/patients', {
+      method: 'POST',
+      body: JSON.stringify(patientData),
+    });
+  },
+};
+
+// Servicios de citas
+export const appointmentService = {
+  getAllAppointments: async () => {
+    return apiRequest('/api/appointments');
+  },
+
+  getAppointmentsByDoctor: async (doctorName: string) => {
+    return apiRequest(`/api/appointments/doctor/${encodeURIComponent(doctorName)}`);
+  },
+
+  createAppointment: async (appointmentData: {
+    date: string;
+    time: string;
+    doctorName: string;
+    doctorSpecialty: string;
+    patientName: string;
+  }) => {
+    return apiRequest('/api/appointments', {
+      method: 'POST',
+      body: JSON.stringify(appointmentData),
+    });
+  },
+
+  cancelAppointment: async (id: number) => {
+    return apiRequest(`/api/appointments/${id}/cancel`, {
+      method: 'PUT',
+    });
+  },
+};

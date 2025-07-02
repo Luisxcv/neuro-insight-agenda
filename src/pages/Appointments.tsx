@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Calendar, Clock, User, ArrowLeft } from 'lucide-react';
+import { appointmentService } from '@/services/api';
 
 const Appointments = () => {
   const [selectedDate, setSelectedDate] = useState('');
@@ -25,14 +26,26 @@ const Appointments = () => {
   ];
 
   useEffect(() => {
-    // Cargar citas existentes del localStorage
-    const savedAppointments = localStorage.getItem('appointments');
-    if (savedAppointments) {
-      setAppointments(JSON.parse(savedAppointments));
-    }
+    const loadAppointments = async () => {
+      try {
+        const response = await appointmentService.getAllAppointments();
+        if (response.success) {
+          setAppointments(response.data);
+        }
+      } catch (error) {
+        console.error('Error al cargar citas:', error);
+        toast({
+          title: "Error",
+          description: "No se pudieron cargar las citas",
+          variant: "destructive"
+        });
+      }
+    };
+
+    loadAppointments();
   }, []);
 
-  const handleScheduleAppointment = () => {
+  const handleScheduleAppointment = async () => {
     if (!selectedDate || !selectedTime || !selectedDoctor) {
       toast({
         title: "Error",
@@ -42,30 +55,42 @@ const Appointments = () => {
       return;
     }
 
-    const doctor = doctors.find(d => d.id.toString() === selectedDoctor);
-    const newAppointment = {
-      id: Date.now(),
-      date: selectedDate,
-      time: selectedTime,
-      doctor: doctor?.name,
-      specialty: doctor?.specialty,
-      status: 'Pendiente',
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const doctor = doctors.find(d => d.id.toString() === selectedDoctor);
+      const appointmentData = {
+        date: selectedDate,
+        time: selectedTime,
+        doctorName: doctor?.name || '',
+        doctorSpecialty: doctor?.specialty || '',
+        patientName: 'Usuario' // Esto debería venir del contexto de usuario
+      };
 
-    const updatedAppointments = [...appointments, newAppointment];
-    setAppointments(updatedAppointments);
-    localStorage.setItem('appointments', JSON.stringify(updatedAppointments));
+      const response = await appointmentService.createAppointment(appointmentData);
+      
+      if (response.success) {
+        // Actualizar la lista de citas
+        const updatedResponse = await appointmentService.getAllAppointments();
+        if (updatedResponse.success) {
+          setAppointments(updatedResponse.data);
+        }
 
-    toast({
-      title: "Cita agendada",
-      description: `Cita con ${doctor?.name} el ${selectedDate} a las ${selectedTime}`,
-    });
+        toast({
+          title: "Cita agendada",
+          description: `Cita con ${doctor?.name} el ${selectedDate} a las ${selectedTime}`,
+        });
 
-    // Limpiar formulario
-    setSelectedDate('');
-    setSelectedTime('');
-    setSelectedDoctor('');
+        // Limpiar formulario
+        setSelectedDate('');
+        setSelectedTime('');
+        setSelectedDoctor('');
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo agendar la cita",
+        variant: "destructive"
+      });
+    }
   };
 
   return (

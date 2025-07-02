@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { patientService } from '@/services/api';
 import { 
   Table,
   TableBody,
@@ -54,22 +55,13 @@ const DoctorPatients = () => {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/patients', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          setPatients(data);
-          setFilteredPatients(data);
-        } else {
-          console.error('Error al cargar pacientes');
+        const response = await patientService.getAllPatients();
+        if (response.success) {
+          setPatients(response.data);
+          setFilteredPatients(response.data);
         }
       } catch (error) {
-        console.error('Error de conexión:', error);
+        console.error('Error al cargar pacientes:', error);
       }
     };
 
