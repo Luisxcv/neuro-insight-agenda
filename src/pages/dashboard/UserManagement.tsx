@@ -75,65 +75,52 @@ const UserManagement = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  // Datos de ejemplo - en un proyecto real vendrían de la API
+  // Cargar usuarios desde el backend
   useEffect(() => {
-    const mockUsers: User[] = [
-      {
-        id: 1,
-        name: "Ana García",
-        email: "ana.garcia@email.com",
-        role: "PATIENT",
-        isActive: true,
-        isApproved: true,
-        createdAt: "2024-01-15",
-        phone: "+1234567890"
-      },
-      {
-        id: 2,
-        name: "Dr. Carlos Mendoza",
-        email: "dr.mendoza@hospital.com",
-        role: "DOCTOR",
-        isActive: true,
-        isApproved: true,
-        createdAt: "2024-01-10",
-        phone: "+1234567891",
-        specialty: "Neurología"
-      },
-      {
-        id: 3,
-        name: "Dra. María López",
-        email: "dra.lopez@clinica.com",
-        role: "DOCTOR",
-        isActive: true,
-        isApproved: false,
-        createdAt: "2024-02-01",
-        phone: "+1234567892",
-        specialty: "Radiología"
-      },
-      {
-        id: 4,
-        name: "Pedro Ruiz",
-        email: "pedro.ruiz@email.com",
-        role: "PATIENT",
-        isActive: false,
-        isApproved: true,
-        createdAt: "2024-01-20",
-        phone: "+1234567893"
-      },
-      {
-        id: 5,
-        name: "Admin Principal",
-        email: "admin@aineurysm.com",
-        role: "ADMIN",
-        isActive: true,
-        isApproved: true,
-        createdAt: "2024-01-01",
-        phone: "+1234567894"
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/users', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          // Adaptar datos del backend a la interfaz frontend
+          const adaptedUsers = data.map((user: any) => ({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role.toUpperCase(),
+            isActive: user.isActive,
+            isApproved: user.isApproved,
+            createdAt: user.createdAt ? user.createdAt.split('T')[0] : '',
+            phone: user.phone,
+            specialty: user.specialty
+          }));
+          setUsers(adaptedUsers);
+          setFilteredUsers(adaptedUsers);
+        } else {
+          toast({
+            title: "Error",
+            description: "No se pudieron cargar los usuarios",
+            variant: "destructive"
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        toast({
+          title: "Error de conexión",
+          description: "No se pudo conectar con el servidor",
+          variant: "destructive"
+        });
       }
-    ];
-    setUsers(mockUsers);
-    setFilteredUsers(mockUsers);
-  }, []);
+    };
+
+    fetchUsers();
+  }, [toast]);
 
   // Filtrar usuarios
   useEffect(() => {
@@ -166,39 +153,111 @@ const UserManagement = () => {
     setFilteredUsers(filtered);
   }, [users, searchTerm, roleFilter, statusFilter]);
 
-  const handleToggleUserStatus = (userId: number) => {
-    setUsers(users.map(user => 
-      user.id === userId 
-        ? { ...user, isActive: !user.isActive }
-        : user
-    ));
-    
-    toast({
-      title: "Estado actualizado",
-      description: "El estado del usuario ha sido modificado",
-    });
+  const handleToggleUserStatus = async (userId: number) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/users/${userId}/toggle-status`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        setUsers(users.map(user => 
+          user.id === userId 
+            ? { ...user, isActive: !user.isActive }
+            : user
+        ));
+        
+        toast({
+          title: "Estado actualizado",
+          description: "El estado del usuario ha sido modificado",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "No se pudo actualizar el estado del usuario",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error de conexión",
+        description: "No se pudo conectar con el servidor",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleApproveDoctor = (userId: number) => {
-    setUsers(users.map(user => 
-      user.id === userId 
-        ? { ...user, isApproved: true }
-        : user
-    ));
-    
-    toast({
-      title: "Médico aprobado",
-      description: "El médico ha sido aprobado y puede acceder al sistema",
-    });
+  const handleApproveDoctor = async (userId: number) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/users/${userId}/approve`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        setUsers(users.map(user => 
+          user.id === userId 
+            ? { ...user, isApproved: true }
+            : user
+        ));
+        
+        toast({
+          title: "Médico aprobado",
+          description: "El médico ha sido aprobado y puede acceder al sistema",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "No se pudo aprobar el médico",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error de conexión",
+        description: "No se pudo conectar con el servidor",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleDeleteUser = (userId: number) => {
-    setUsers(users.filter(user => user.id !== userId));
-    toast({
-      title: "Usuario eliminado",
-      description: "El usuario ha sido eliminado del sistema",
-      variant: "destructive"
-    });
+  const handleDeleteUser = async (userId: number) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        setUsers(users.filter(user => user.id !== userId));
+        toast({
+          title: "Usuario eliminado",
+          description: "El usuario ha sido eliminado del sistema",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "No se pudo eliminar el usuario",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error de conexión",
+        description: "No se pudo conectar con el servidor",
+        variant: "destructive"
+      });
+    }
   };
 
   const getRoleBadge = (role: string) => {
