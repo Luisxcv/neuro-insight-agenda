@@ -130,6 +130,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       title: "Sesión cerrada",
       description: "Has cerrado sesión correctamente",
     });
+    // Forzar recarga para limpiar cualquier estado residual
+    window.location.href = '/login';
   };
 
   const value = {
