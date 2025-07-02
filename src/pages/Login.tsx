@@ -18,20 +18,41 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     
-    // Simulación de login - aquí iría la lógica real con el backend
-    setTimeout(() => {
-      localStorage.setItem('user', JSON.stringify({ 
-        email, 
-        role: 'patient',
-        name: 'Usuario Demo' 
-      }));
-      toast({
-        title: "Inicio de sesión exitoso",
-        description: "Bienvenido al sistema AI-Neurysm",
+    try {
+      const response = await fetch('http://localhost:8080/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
-      navigate('/dashboard');
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        toast({
+          title: "Inicio de sesión exitoso",
+          description: "Bienvenido al sistema AI-Neurysm",
+        });
+        navigate('/dashboard');
+      } else {
+        toast({
+          title: "Error",
+          description: data.message || "Credenciales inválidas",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error de conexión",
+        description: "No se pudo conectar con el servidor",
+        variant: "destructive"
+      });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (

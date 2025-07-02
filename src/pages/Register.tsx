@@ -33,15 +33,45 @@ const Register = () => {
 
     setLoading(true);
     
-    // Simulación de registro
-    setTimeout(() => {
-      toast({
-        title: "Registro exitoso",
-        description: "Tu cuenta ha sido creada correctamente",
+    try {
+      const response = await fetch('http://localhost:8080/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+          role: formData.role
+        }),
       });
-      navigate('/login');
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast({
+          title: "Registro exitoso",
+          description: "Tu cuenta ha sido creada correctamente",
+        });
+        navigate('/login');
+      } else {
+        toast({
+          title: "Error",
+          description: data.message || "Error en el registro",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error de conexión",
+        description: "No se pudo conectar con el servidor",
+        variant: "destructive"
+      });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
