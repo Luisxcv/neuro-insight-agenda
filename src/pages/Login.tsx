@@ -37,7 +37,8 @@ const Login = () => {
           title: "Inicio de sesión exitoso",
           description: "Bienvenido al sistema AI-Neurysm",
         });
-        navigate('/dashboard');
+        // Pequeño delay para asegurar que el localStorage se actualice
+        setTimeout(() => navigate('/dashboard'), 100);
       } else {
         toast({
           title: "Error",
