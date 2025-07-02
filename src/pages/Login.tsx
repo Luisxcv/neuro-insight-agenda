@@ -40,8 +40,8 @@ const Login = () => {
           description: "Bienvenido al sistema AI-Neurysm",
         });
         
-        // Redirección inmediata
-        navigate('/dashboard');
+        // Redirección forzada para evitar problemas de estado
+        window.location.href = '/dashboard';
       } else {
         toast({
           title: "Error",
