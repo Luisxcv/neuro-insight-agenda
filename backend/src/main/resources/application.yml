@@ -32,7 +32,7 @@ logging:
     org.springframework.security: DEBUG
 
 jwt:
-  secret: ${JWT_SECRET:mi_clave_secreta_jwt_super_segura_para_desarrollo}
+  secret: ${JWT_SECRET:mi_clave_secreta_jwt_super_segura_para_desarrollo_que_debe_tener_al_menos_512_bits_para_HS512_algoritmo_jwt_token_provider}
   expiration: 86400000 # 24 horas en milisegundos
 
 app:
