@@ -79,7 +79,7 @@ const UserManagement = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/users', {
+        const response = await fetch('http://localhost:3000/api/users', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'Content-Type': 'application/json'
@@ -88,12 +88,12 @@ const UserManagement = () => {
         
         if (response.ok) {
           const data = await response.json();
-          // Adaptar datos del backend a la interfaz frontend
+          // Los datos ya vienen en el formato correcto del backend
           const adaptedUsers = data.map((user: any) => ({
             id: user.id,
             name: user.name,
             email: user.email,
-            role: user.role.toUpperCase(),
+            role: user.role.toUpperCase(), // Convertir a mayúsculas para compatibilidad con UI
             isActive: user.isActive,
             isApproved: user.isApproved,
             createdAt: user.createdAt ? user.createdAt.split('T')[0] : '',
@@ -155,7 +155,7 @@ const UserManagement = () => {
 
   const handleToggleUserStatus = async (userId: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/users/${userId}/toggle-status`, {
+      const response = await fetch(`http://localhost:3000/api/users/${userId}/toggle-status`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -192,7 +192,7 @@ const UserManagement = () => {
 
   const handleApproveDoctor = async (userId: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/users/${userId}/approve`, {
+      const response = await fetch(`http://localhost:3000/api/users/${userId}/approve`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -229,7 +229,7 @@ const UserManagement = () => {
 
   const handleDeleteUser = async (userId: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/users/${userId}`, {
+      const response = await fetch(`http://localhost:3000/api/users/${userId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,

@@ -8,6 +8,10 @@ public class UserResponse {
     private String email;
     private String role;
     private Boolean isApproved;
+    private Boolean isActive;
+    private String createdAt;
+    private String phone;
+    private String specialty;
 
     // Constructores
     public UserResponse() {}
@@ -18,6 +22,11 @@ public class UserResponse {
         this.email = user.getEmail();
         this.role = user.getRole() != null ? user.getRole().toLowerCase() : "patient";
         this.isApproved = user.getIsApproved();
+        this.isActive = user.getIsActive();
+        this.createdAt = user.getCreatedAt() != null ? user.getCreatedAt().toString() : null;
+        this.phone = user.getPhone();
+        // Specialty se puede agregar más tarde cuando exista el campo en User
+        this.specialty = null;
     }
 
     // Getters y Setters
@@ -35,4 +44,16 @@ public class UserResponse {
 
     public Boolean getIsApproved() { return isApproved; }
     public void setIsApproved(Boolean isApproved) { this.isApproved = isApproved; }
+
+    public Boolean getIsActive() { return isActive; }
+    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+
+    public String getCreatedAt() { return createdAt; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getSpecialty() { return specialty; }
+    public void setSpecialty(String specialty) { this.specialty = specialty; }
 }
