@@ -51,14 +51,14 @@ public class AuthService {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(request.getRole() != null ? request.getRole().toUpperCase() : "PATIENT");
+        user.setRole(request.getRole() != null ? request.getRole().toLowerCase() : "patient");
         
         // Auto-aprobar pacientes, médicos requieren aprobación manual  
-        user.setIsApproved("PATIENT".equals(user.getRole()));
+        user.setIsApproved("patient".equals(user.getRole()));
         
         // Asegurar que los pacientes tengan el rol correcto por defecto
         if (user.getRole() == null || user.getRole().trim().isEmpty()) {
-            user.setRole("PATIENT");
+            user.setRole("patient");
         }
 
         User savedUser = userRepository.save(user);
@@ -100,7 +100,7 @@ public class AuthService {
         // Verificar aprobación para médicos
         System.out.println("User role: " + user.getRole());
         System.out.println("User isApproved: " + user.getIsApproved());
-        if ("DOCTOR".equals(user.getRole()) && !user.getIsApproved()) {
+        if ("doctor".equals(user.getRole()) && !user.getIsApproved()) {
             System.out.println("FALLO: Doctor no aprobado");
             throw new RuntimeException("Tu cuenta de médico está pendiente de aprobación");
         }
