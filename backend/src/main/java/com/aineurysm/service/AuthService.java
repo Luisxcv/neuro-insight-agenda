@@ -89,10 +89,10 @@ public class AuthService {
             throw new RuntimeException("Tu cuenta de médico está pendiente de aprobación");
         }
 
-        // Autenticar
-        Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+        // Verificar contraseña manualmente primero
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Credenciales inválidas");
+        }
 
         // Generar token
         String token = tokenProvider.generateToken(user.getEmail());
