@@ -21,12 +21,12 @@ public class RegisterRequest {
     @NotBlank(message = "Confirmar contraseña es requerido")
     private String confirmPassword;
     
-    private User.Role role = User.Role.PATIENT;
+    private String role = "patient";
 
     // Constructores
     public RegisterRequest() {}
 
-    public RegisterRequest(String name, String email, String password, String confirmPassword, User.Role role) {
+    public RegisterRequest(String name, String email, String password, String confirmPassword, String role) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -47,6 +47,6 @@ public class RegisterRequest {
     public String getConfirmPassword() { return confirmPassword; }
     public void setConfirmPassword(String confirmPassword) { this.confirmPassword = confirmPassword; }
 
-    public User.Role getRole() { return role; }
-    public void setRole(User.Role role) { this.role = role; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }
