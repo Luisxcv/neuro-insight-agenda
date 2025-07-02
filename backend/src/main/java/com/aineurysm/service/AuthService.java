@@ -119,21 +119,42 @@ public class AuthService {
 
         // Generar token
         System.out.println("Generando token para: " + user.getEmail());
-        String token = tokenProvider.generateToken(user.getEmail());
-        System.out.println("Token generado exitosamente: " + (token != null ? "SÍ" : "NO"));
+        String token;
+        try {
+            token = tokenProvider.generateToken(user.getEmail());
+            System.out.println("Token generado exitosamente: " + (token != null ? "SÍ" : "NO"));
+        } catch (Exception e) {
+            System.out.println("ERROR generando token: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error generando token de autenticación");
+        }
         
         System.out.println("Creando UserResponse...");
-        UserResponse userResponse = new UserResponse(user);
-        System.out.println("UserResponse creado exitosamente");
+        UserResponse userResponse;
+        try {
+            userResponse = new UserResponse(user);
+            System.out.println("UserResponse creado exitosamente");
+        } catch (Exception e) {
+            System.out.println("ERROR creando UserResponse: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error creando respuesta de usuario");
+        }
         
         System.out.println("Creando AuthResponse...");
-        AuthResponse authResponse = new AuthResponse(
-            true,
-            "Inicio de sesión exitoso",
-            userResponse,
-            token
-        );
-        System.out.println("AuthResponse creado exitosamente");
+        AuthResponse authResponse;
+        try {
+            authResponse = new AuthResponse(
+                true,
+                "Inicio de sesión exitoso",
+                userResponse,
+                token
+            );
+            System.out.println("AuthResponse creado exitosamente");
+        } catch (Exception e) {
+            System.out.println("ERROR creando AuthResponse: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error creando respuesta de autenticación");
+        }
         
         return authResponse;
     }
