@@ -20,6 +20,7 @@ const Login = () => {
     setLoading(true);
     
     try {
+      console.log('Intentando login con:', { email, password });
       const data = await authService.login(email, password);
 
       console.log('Login response:', data);
