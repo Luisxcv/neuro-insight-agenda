@@ -95,7 +95,7 @@ public class AppointmentController {
             appointment.setPatientEmail(userEmail);
             
             System.out.println("Setting status to: " + Appointment.AppointmentStatus.pending);
-            appointment.setStatus(Appointment.AppointmentStatus.PENDING);
+            appointment.setStatus(Appointment.AppointmentStatus.pending);
 
             System.out.println("About to save appointment...");
             Appointment savedAppointment = appointmentService.createAppointment(appointment);
