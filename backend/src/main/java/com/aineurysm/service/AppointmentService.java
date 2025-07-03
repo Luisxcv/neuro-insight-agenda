@@ -44,7 +44,7 @@ public class AppointmentService {
             throw new RuntimeException("Ya existe una cita programada para esa fecha y hora con ese doctor");
         }
 
-        appointment.setStatus(Appointment.AppointmentStatus.PENDING);
+        appointment.setStatus(Appointment.AppointmentStatus.pending);
         return appointmentRepository.save(appointment);
     }
 

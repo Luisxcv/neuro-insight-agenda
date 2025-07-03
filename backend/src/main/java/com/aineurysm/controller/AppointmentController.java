@@ -94,7 +94,7 @@ public class AppointmentController {
             appointment.setPatientName(request.getPatientName());
             appointment.setPatientEmail(userEmail);
             
-            System.out.println("Setting status to: " + Appointment.AppointmentStatus.PENDING);
+            System.out.println("Setting status to: " + Appointment.AppointmentStatus.pending);
             appointment.setStatus(Appointment.AppointmentStatus.PENDING);
 
             System.out.println("About to save appointment...");
@@ -121,7 +121,7 @@ public class AppointmentController {
             Appointment appointment = appointmentService.getAppointmentById(id)
                 .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
 
-            appointment.setStatus(Appointment.AppointmentStatus.CANCELLED);
+            appointment.setStatus(Appointment.AppointmentStatus.cancelled);
             appointmentService.updateAppointment(appointment);
 
             Map<String, Object> response = new HashMap<>();
