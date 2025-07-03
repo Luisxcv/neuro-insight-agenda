@@ -12,9 +12,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173", "http://localhost:3000", "http://localhost:4173", "https://01343946-e828-42d0-b28e-4199593fb280.lovableproject.com"})
-public class AuthController {
+public class AuthControllerLegacy {
 
     @Autowired
     private AuthService authService;
@@ -22,9 +22,17 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         try {
+            System.out.println("=== REGISTER REQUEST (LEGACY) ===");
+            System.out.println("Name: " + request.getName());
+            System.out.println("Email: " + request.getEmail());
+            System.out.println("Role: " + request.getRole());
+            
             AuthResponse response = authService.register(request);
+            System.out.println("Registration successful for: " + request.getEmail());
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
+            System.out.println("Registration failed: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest().body(new ErrorResponse(false, e.getMessage()));
         }
     }
@@ -32,56 +40,19 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
-            System.out.println("=== LOGIN REQUEST ===");
+            System.out.println("=== LOGIN REQUEST (LEGACY) ===");
             System.out.println("Email: " + request.getEmail());
-            System.out.println("Password: " + request.getPassword());
             
             AuthResponse response = authService.login(request);
             System.out.println("Login successful for: " + request.getEmail());
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             System.out.println("Login failed: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.badRequest().body(new ErrorResponse(false, e.getMessage()));
         }
     }
 
-    @GetMapping("/verify")
-    public ResponseEntity<?> verify(Authentication authentication) {
-        try {
-            UserResponse userResponse = authService.getCurrentUser(authentication);
-            return ResponseEntity.ok(new ApiResponse<>(true, "Token válido", userResponse));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new ErrorResponse(false, "Token inválido"));
-        }
-    }
-
-    @GetMapping("/health")
-    public ResponseEntity<?> health() {
-        return ResponseEntity.ok(new ApiResponse<>(true, "API funcionando correctamente", null));
-    }
-
     // Clases internas para respuestas
-    public static class ApiResponse<T> {
-        private boolean success;
-        private String message;
-        private T data;
-
-        public ApiResponse(boolean success, String message, T data) {
-            this.success = success;
-            this.message = message;
-            this.data = data;
-        }
-
-        // Getters y setters
-        public boolean isSuccess() { return success; }
-        public void setSuccess(boolean success) { this.success = success; }
-        public String getMessage() { return message; }
-        public void setMessage(String message) { this.message = message; }
-        public T getData() { return data; }
-        public void setData(T data) { this.data = data; }
-    }
-
     public static class ErrorResponse {
         private boolean success;
         private String message;
