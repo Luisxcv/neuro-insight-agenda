@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { authService } from '@/services/api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -19,18 +20,11 @@ const Login = () => {
     setLoading(true);
     
     try {
-      const response = await fetch('http://localhost:3000/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const data = await authService.login(email, password);
 
-      const data = await response.json();
-      console.log('Login response:', { status: response.status, data });
+      console.log('Login response:', data);
 
-      if (response.ok && data.success) {
+      if (data.success) {
         // Guardar en localStorage primero
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
