@@ -136,4 +136,73 @@ public class AppointmentController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
+
+    @GetMapping("/pending")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> getPendingAppointments() {
+        try {
+            List<Appointment> appointments = appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.pending);
+            
+            List<AppointmentResponse> appointmentResponses = appointments.stream()
+                .map(AppointmentResponse::new)
+                .collect(Collectors.toList());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("data", appointmentResponses);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Error al obtener citas pendientes: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    @PutMapping("/{id}/approve")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> approveAppointment(@PathVariable Long id) {
+        try {
+            Appointment appointment = appointmentService.getAppointmentById(id)
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+
+            appointment.setStatus(Appointment.AppointmentStatus.approved);
+            appointmentService.updateAppointment(appointment);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Cita aprobada exitosamente");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    @PutMapping("/{id}/reject")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> rejectAppointment(@PathVariable Long id) {
+        try {
+            Appointment appointment = appointmentService.getAppointmentById(id)
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+
+            appointment.setStatus(Appointment.AppointmentStatus.rejected);
+            appointmentService.updateAppointment(appointment);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Cita rechazada");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
 }

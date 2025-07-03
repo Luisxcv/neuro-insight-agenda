@@ -60,4 +60,8 @@ public class AppointmentService {
         List<Appointment> existingAppointments = appointmentRepository.findByDateAndTimeAndDoctor(date, time, doctorName);
         return existingAppointments.isEmpty();
     }
+
+    public List<Appointment> getAppointmentsByStatus(Appointment.AppointmentStatus status) {
+        return appointmentRepository.findByStatus(status);
+    }
 }

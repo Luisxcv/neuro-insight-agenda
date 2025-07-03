@@ -140,6 +140,10 @@ export const appointmentService = {
     return apiRequest(`/appointments/doctor/${encodeURIComponent(doctorName)}`);
   },
 
+  getPendingAppointments: async () => {
+    return apiRequest('/appointments/pending');
+  },
+
   createAppointment: async (appointmentData: {
     date: string;
     time: string;
@@ -150,6 +154,18 @@ export const appointmentService = {
     return apiRequest('/appointments', {
       method: 'POST',
       body: JSON.stringify(appointmentData),
+    });
+  },
+
+  approveAppointment: async (id: number) => {
+    return apiRequest(`/appointments/${id}/approve`, {
+      method: 'PUT',
+    });
+  },
+
+  rejectAppointment: async (id: number) => {
+    return apiRequest(`/appointments/${id}/reject`, {
+      method: 'PUT',
     });
   },
 

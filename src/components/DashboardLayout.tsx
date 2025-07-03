@@ -75,7 +75,7 @@ const DashboardLayout = () => {
         return [
           ...baseItems,
           { title: "Mis Pacientes", url: "/dashboard/patients", icon: Users },
-          { title: "Citas Programadas", url: "/dashboard/appointments", icon: Calendar },
+          { title: "Mis Citas", url: "/dashboard/appointments", icon: Calendar },
           { title: "Diagnósticos", url: "/dashboard/diagnoses", icon: Brain },
           { title: "Mi Perfil", url: "/dashboard/profile", icon: Stethoscope },
         ];
@@ -85,7 +85,7 @@ const DashboardLayout = () => {
           ...baseItems,
           { title: "Gestión de Usuarios", url: "/dashboard/users", icon: Users },
           { title: "Médicos Pendientes", url: "/dashboard/pending-doctors", icon: UserCheck },
-          { title: "Todas las Citas", url: "/dashboard/all-appointments", icon: Calendar },
+          { title: "Gestión de Citas", url: "/dashboard/appointments", icon: Calendar },
           { title: "Reportes", url: "/dashboard/reports", icon: FileText },
           { title: "Configuración", url: "/dashboard/settings", icon: Settings },
         ];

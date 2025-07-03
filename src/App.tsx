@@ -14,8 +14,10 @@ import UserManagement from "./pages/dashboard/UserManagement";
 import PatientAnalysis from "./pages/dashboard/PatientAnalysis";
 import PatientProfile from "./pages/dashboard/PatientProfile";
 import DoctorPatients from "./pages/dashboard/DoctorPatients";
+import AdminAppointments from "./pages/dashboard/AdminAppointments";
 import PendingDoctors from "./pages/dashboard/PendingDoctors";
 import Appointments from "./pages/Appointments";
+import AppointmentsRouter from "./components/AppointmentsRouter";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,7 +37,7 @@ const App = () => (
               <Route index element={<DashboardHome />} />
               <Route path="users" element={<UserManagement />} />
               <Route path="analysis" element={<PatientAnalysis />} />
-              <Route path="appointments" element={<Appointments />} />
+              <Route path="appointments" element={<AppointmentsRouter />} />
               <Route path="patients" element={<DoctorPatients />} />
               <Route path="diagnoses" element={<div>Diagnósticos</div>} />
               <Route path="pending-doctors" element={<PendingDoctors />} />

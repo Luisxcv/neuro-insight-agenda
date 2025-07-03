@@ -76,7 +76,11 @@ const DoctorPatients = () => {
         }
         
         if (appointmentsResponse.success) {
-          setAppointments(appointmentsResponse.data);
+          // Filtrar solo citas aprobadas para el médico
+          const approvedAppointments = appointmentsResponse.data.filter(
+            (apt: any) => apt.status === 'approved'
+          );
+          setAppointments(approvedAppointments);
         }
       } catch (error) {
         console.error('Error al cargar datos:', error);
@@ -176,12 +180,12 @@ const DoctorPatients = () => {
         </Card>
       </div>
 
-      {/* Mis Citas */}
+      {/* Mis Citas Aprobadas */}
       <Card>
         <CardHeader>
-          <CardTitle>Mis Citas</CardTitle>
+          <CardTitle>Mis Citas Aprobadas</CardTitle>
           <CardDescription>
-            {appointments.length} citas programadas
+            {appointments.length} citas aprobadas por el administrador
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -190,14 +194,15 @@ const DoctorPatients = () => {
           ) : appointments.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No tienes citas programadas</p>
+              <p>No tienes citas aprobadas</p>
+              <p className="text-sm">Las citas aparecerán aquí cuando el administrador las apruebe</p>
             </div>
           ) : (
             <div className="space-y-3">
               {appointments.slice(0, 5).map((appointment) => (
-                <div key={appointment.id} className="flex items-center justify-between p-3 border rounded-lg">
+                <div key={appointment.id} className="flex items-center justify-between p-3 border rounded-lg bg-green-50">
                   <div className="flex items-center space-x-3">
-                    <Calendar className="h-5 w-5 text-blue-600" />
+                    <Calendar className="h-5 w-5 text-green-600" />
                     <div>
                       <p className="font-medium">{appointment.patientName}</p>
                       <p className="text-sm text-muted-foreground">{appointment.patientEmail}</p>
@@ -206,6 +211,7 @@ const DoctorPatients = () => {
                   <div className="text-right">
                     <p className="font-medium">{appointment.date}</p>
                     <p className="text-sm text-muted-foreground">{appointment.time}</p>
+                    <Badge variant="default" className="mt-1 bg-green-100 text-green-800">Aprobada</Badge>
                   </div>
                 </div>
               ))}
