@@ -101,6 +101,31 @@ const Appointments = () => {
     }
   };
 
+  const handleRequestReschedule = async (appointmentId: number) => {
+    try {
+      const response = await appointmentService.requestReschedule(appointmentId);
+      
+      if (response.success) {
+        // Actualizar la lista de citas
+        const updatedResponse = await appointmentService.getAllAppointments();
+        if (updatedResponse.success) {
+          setAppointments(updatedResponse.data);
+        }
+
+        toast({
+          title: "Solicitud enviada",
+          description: "Se ha enviado la solicitud de reprogramación al administrador",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo enviar la solicitud",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -205,34 +230,68 @@ const Appointments = () => {
                   <p>No tienes citas programadas</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {appointments.map((appointment) => (
-                    <div key={appointment.id} className="p-4 border rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <User className="h-5 w-5 text-blue-600" />
-                          <div>
-                            <p className="font-semibold">{appointment.doctor}</p>
-                            <p className="text-sm text-gray-600">{appointment.specialty}</p>
+                  <div className="space-y-4">
+                    {appointments.map((appointment) => (
+                      <div key={appointment.id} className="p-4 border rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <User className="h-5 w-5 text-blue-600" />
+                            <div>
+                              <p className="font-semibold">{appointment.doctorName}</p>
+                              <p className="text-sm text-gray-600">{appointment.doctorSpecialty}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-medium">{appointment.date}</p>
+                            <p className="text-sm text-gray-600">{appointment.time}</p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="font-medium">{appointment.date}</p>
-                          <p className="text-sm text-gray-600">{appointment.time}</p>
+                        <div className="mt-2 flex items-center justify-between">
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            appointment.status === 'pending' 
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : appointment.status === 'approved'
+                              ? 'bg-green-100 text-green-800'
+                              : appointment.status === 'reschedule_requested'
+                              ? 'bg-blue-100 text-blue-800'
+                              : appointment.status === 'rejected'
+                              ? 'bg-red-100 text-red-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {appointment.status === 'pending' && 'Pendiente'}
+                            {appointment.status === 'approved' && 'Aprobada'}
+                            {appointment.status === 'reschedule_requested' && 'Reprogramación Solicitada'}
+                            {appointment.status === 'rejected' && 'Rechazada'}
+                            {appointment.status === 'cancelled' && 'Cancelada'}
+                            {appointment.status === 'completed' && 'Completada'}
+                          </span>
+                          {appointment.status === 'approved' && (
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleRequestReschedule(appointment.id)}
+                                className="text-blue-600"
+                              >
+                                Solicitar Reprogramación
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => appointmentService.cancelAppointment(appointment.id).then(() => {
+                                  setAppointments(appointments.filter(apt => apt.id !== appointment.id));
+                                  toast({ title: "Cita cancelada", description: "La cita ha sido cancelada" });
+                                })}
+                                className="text-red-600"
+                              >
+                                Cancelar
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </div>
-                      <div className="mt-2 flex items-center justify-between">
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          appointment.status === 'Pendiente' 
-                            ? 'bg-yellow-100 text-yellow-800' 
-                            : 'bg-green-100 text-green-800'
-                        }`}>
-                          {appointment.status}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
               )}
             </CardContent>
           </Card>

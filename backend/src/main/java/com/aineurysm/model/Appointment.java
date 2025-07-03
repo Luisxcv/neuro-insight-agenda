@@ -59,6 +59,6 @@ public class Appointment {
     }
 
     public enum AppointmentStatus {
-        pending, approved, rejected, cancelled, completed, rescheduled
+        pending, approved, rejected, cancelled, completed, reschedule_requested
     }
 }

@@ -37,7 +37,7 @@ interface Appointment {
   doctorSpecialty: string;
   patientName: string;
   patientEmail: string;
-  status: 'pending' | 'approved' | 'rejected' | 'cancelled' | 'completed';
+  status: 'pending' | 'approved' | 'rejected' | 'cancelled' | 'completed' | 'reschedule_requested';
   createdAt: string;
 }
 
@@ -49,6 +49,7 @@ const AdminAppointments = () => {
 
   useEffect(() => {
     fetchAppointments();
+    fetchRescheduleRequests();
   }, []);
 
   const fetchAppointments = async () => {
@@ -81,6 +82,27 @@ const AdminAppointments = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRescheduleRequests = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/appointments/reschedule-requests', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          // Agregar las solicitudes de reprogramación a la lista
+          setAppointments(prev => [...prev, ...data.data]);
+        }
+      }
+    } catch (error) {
+      console.error('Error al cargar solicitudes de reprogramación:', error);
     }
   };
 
@@ -161,6 +183,8 @@ const AdminAppointments = () => {
         return <Badge variant="outline" className="text-gray-600">Cancelada</Badge>;
       case 'completed':
         return <Badge variant="default">Completada</Badge>;
+      case 'reschedule_requested':
+        return <Badge variant="outline" className="text-blue-600">Reprogramación Solicitada</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -171,21 +195,34 @@ const AdminAppointments = () => {
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Gestión de Citas</h2>
         <p className="text-muted-foreground">
-          Administra todas las citas pendientes de aprobación
+          Administra citas pendientes y solicitudes de reprogramación
         </p>
       </div>
 
       {/* Estadísticas */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Citas Pendientes</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{appointments.length}</div>
+            <div className="text-2xl font-bold">{appointments.filter(apt => apt.status === 'pending').length}</div>
             <p className="text-xs text-muted-foreground">
-              Requieren aprobación
+              Nuevas solicitudes
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Reprogramaciones</CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{appointments.filter(apt => apt.status === 'reschedule_requested').length}</div>
+            <p className="text-xs text-muted-foreground">
+              Solicitudes de cambio
             </p>
           </CardContent>
         </Card>
@@ -226,12 +263,12 @@ const AdminAppointments = () => {
         </Card>
       </div>
 
-      {/* Lista de citas pendientes */}
+      {/* Lista de citas pendientes y reprogramaciones */}
       <Card>
         <CardHeader>
-          <CardTitle>Citas Pendientes de Aprobación</CardTitle>
+          <CardTitle>Citas y Solicitudes Pendientes</CardTitle>
           <CardDescription>
-            {appointments.length} citas esperando revisión
+            {appointments.length} elementos esperando revisión
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -240,7 +277,7 @@ const AdminAppointments = () => {
           ) : appointments.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <CheckCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No hay citas pendientes de aprobación</p>
+              <p>No hay citas o solicitudes pendientes</p>
             </div>
           ) : (
             <Table>
@@ -340,48 +377,98 @@ const AdminAppointments = () => {
                                 </div>
                                 
                                 <div className="flex gap-2 pt-4">
-                                  <Button 
-                                    onClick={() => {
-                                      handleApproveAppointment(selectedAppointment.id);
-                                      setSelectedAppointment(null);
-                                    }}
-                                    className="flex-1"
-                                  >
-                                    <CheckCircle className="h-4 w-4 mr-2" />
-                                    Aprobar Cita
-                                  </Button>
-                                  <Button 
-                                    variant="destructive"
-                                    onClick={() => {
-                                      handleRejectAppointment(selectedAppointment.id);
-                                      setSelectedAppointment(null);
-                                    }}
-                                    className="flex-1"
-                                  >
-                                    <XCircle className="h-4 w-4 mr-2" />
-                                    Rechazar
-                                  </Button>
+                                  {selectedAppointment.status === 'pending' ? (
+                                    <>
+                                      <Button 
+                                        onClick={() => {
+                                          handleApproveAppointment(selectedAppointment.id);
+                                          setSelectedAppointment(null);
+                                        }}
+                                        className="flex-1"
+                                      >
+                                        <CheckCircle className="h-4 w-4 mr-2" />
+                                        Aprobar Cita
+                                      </Button>
+                                      <Button 
+                                        variant="destructive"
+                                        onClick={() => {
+                                          handleRejectAppointment(selectedAppointment.id);
+                                          setSelectedAppointment(null);
+                                        }}
+                                        className="flex-1"
+                                      >
+                                        <XCircle className="h-4 w-4 mr-2" />
+                                        Rechazar
+                                      </Button>
+                                    </>
+                                  ) : selectedAppointment.status === 'reschedule_requested' ? (
+                                    <>
+                                      <Button 
+                                        onClick={() => {
+                                          handleApproveAppointment(selectedAppointment.id);
+                                          setSelectedAppointment(null);
+                                        }}
+                                        className="flex-1"
+                                      >
+                                        <CheckCircle className="h-4 w-4 mr-2" />
+                                        Aprobar Reprogramación
+                                      </Button>
+                                      <Button 
+                                        variant="destructive"
+                                        onClick={() => {
+                                          handleRejectAppointment(selectedAppointment.id);
+                                          setSelectedAppointment(null);
+                                        }}
+                                        className="flex-1"
+                                      >
+                                        <XCircle className="h-4 w-4 mr-2" />
+                                        Rechazar Reprogramación
+                                      </Button>
+                                    </>
+                                  ) : null}
                                 </div>
                               </div>
                             )}
                           </DialogContent>
                         </Dialog>
                         
-                        <Button
-                          size="sm"
-                          onClick={() => handleApproveAppointment(appointment.id)}
-                          className="bg-green-600 hover:bg-green-700"
-                        >
-                          <CheckCircle className="h-4 w-4" />
-                        </Button>
-                        
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleRejectAppointment(appointment.id)}
-                        >
-                          <XCircle className="h-4 w-4" />
-                        </Button>
+                        {appointment.status === 'pending' ? (
+                          <>
+                            <Button
+                              size="sm"
+                              onClick={() => handleApproveAppointment(appointment.id)}
+                              className="bg-green-600 hover:bg-green-700"
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </Button>
+                            
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleRejectAppointment(appointment.id)}
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </Button>
+                          </>
+                        ) : appointment.status === 'reschedule_requested' ? (
+                          <>
+                            <Button
+                              size="sm"
+                              onClick={() => handleApproveAppointment(appointment.id)}
+                              className="bg-blue-600 hover:bg-blue-700"
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </Button>
+                            
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleRejectAppointment(appointment.id)}
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </Button>
+                          </>
+                        ) : null}
                       </div>
                     </TableCell>
                   </TableRow>

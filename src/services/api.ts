@@ -174,4 +174,14 @@ export const appointmentService = {
       method: 'PUT',
     });
   },
+
+  requestReschedule: async (id: number) => {
+    return apiRequest(`/appointments/${id}/request-reschedule`, {
+      method: 'PUT',
+    });
+  },
+
+  getRescheduleRequests: async () => {
+    return apiRequest('/appointments/reschedule-requests');
+  },
 };

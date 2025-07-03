@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 import { patientService, appointmentService, userService } from '@/services/api';
 import { 
   Table,
@@ -53,6 +54,7 @@ const DoctorPatients = () => {
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   // Cargar datos desde el backend
   useEffect(() => {
@@ -211,7 +213,39 @@ const DoctorPatients = () => {
                   <div className="text-right">
                     <p className="font-medium">{appointment.date}</p>
                     <p className="text-sm text-muted-foreground">{appointment.time}</p>
-                    <Badge variant="default" className="mt-1 bg-green-100 text-green-800">Aprobada</Badge>
+                    <div className="flex gap-1 mt-1">
+                      <Badge variant="default" className="bg-green-100 text-green-800">Aprobada</Badge>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={async () => {
+                          try {
+                            await appointmentService.requestReschedule(appointment.id);
+                            // Actualizar citas después de solicitar reprogramación
+                            const response = await appointmentService.getAppointmentsByDoctor(currentUser?.name || '');
+                            if (response.success) {
+                              const approvedAppointments = response.data.filter(
+                                (apt: any) => apt.status === 'approved'
+                              );
+                              setAppointments(approvedAppointments);
+                            }
+                            toast({
+                              title: "Solicitud enviada",
+                              description: "Se ha solicitado la reprogramación al administrador",
+                            });
+                          } catch (error) {
+                            toast({
+                              title: "Error",
+                              description: "No se pudo enviar la solicitud",
+                              variant: "destructive"
+                            });
+                          }
+                        }}
+                        className="text-blue-600 text-xs px-2 py-1"
+                      >
+                        Reprogramar
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}

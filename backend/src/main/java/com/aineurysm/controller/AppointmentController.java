@@ -205,4 +205,48 @@ public class AppointmentController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
-}
+    }
+
+    @PutMapping("/{id}/request-reschedule")
+    public ResponseEntity<Map<String, Object>> requestReschedule(@PathVariable Long id) {
+        try {
+            Appointment appointment = appointmentService.getAppointmentById(id)
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+
+            appointment.setStatus(Appointment.AppointmentStatus.reschedule_requested);
+            appointmentService.updateAppointment(appointment);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Solicitud de reprogramación enviada");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    @GetMapping("/reschedule-requests")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> getRescheduleRequests() {
+        try {
+            List<Appointment> appointments = appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.reschedule_requested);
+            
+            List<AppointmentResponse> appointmentResponses = appointments.stream()
+                .map(AppointmentResponse::new)
+                .collect(Collectors.toList());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("data", appointmentResponses);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Error al obtener solicitudes de reprogramación: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
