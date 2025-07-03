@@ -80,6 +80,12 @@ public class AppointmentController {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String userEmail = auth.getName();
 
+            System.out.println("=== CREATE APPOINTMENT REQUEST ===");
+            System.out.println("Date: " + request.getDate());
+            System.out.println("Time: " + request.getTime());
+            System.out.println("Doctor: " + request.getDoctorName());
+            System.out.println("Patient Email: " + userEmail);
+
             Appointment appointment = new Appointment();
             appointment.setDate(LocalDate.parse(request.getDate()));
             appointment.setTime(LocalTime.parse(request.getTime()));
@@ -87,8 +93,13 @@ public class AppointmentController {
             appointment.setDoctorSpecialty(request.getDoctorSpecialty());
             appointment.setPatientName(request.getPatientName());
             appointment.setPatientEmail(userEmail);
+            
+            System.out.println("Setting status to: " + Appointment.AppointmentStatus.PENDING);
+            appointment.setStatus(Appointment.AppointmentStatus.PENDING);
 
+            System.out.println("About to save appointment...");
             Appointment savedAppointment = appointmentService.createAppointment(appointment);
+            System.out.println("Appointment saved successfully with ID: " + savedAppointment.getId());
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
