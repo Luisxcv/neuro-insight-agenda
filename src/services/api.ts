@@ -1,5 +1,5 @@
 // Configuración base de la API
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'http://localhost:3000';
 
 // Función helper para hacer requests con token
 const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
